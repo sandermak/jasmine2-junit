@@ -50,12 +50,12 @@
             };
 
             this.specDone = function(result) {
-                if(result.status === 'failed') {
+                if(isFailed(result)) {
                     totalNumberOfFailures++;
                 }
 
                 console.log('specDone', result)
-                console.log(specToJUnitXml(result))
+                console.log(specToJUnitXml(result, specStartTime))
                 console.log('spec time: ', elapsed(specStartTime, new Date()))  
             };
 
@@ -66,8 +66,38 @@
         return JUnitXmlReporter;
     };
 
-    function specToJUnitXml(result) {
+    function isFailed(result) {
+        return result.status === 'failed'
+    }
 
+    function isSkipped(result) {
+        return result.status === 'pending'
+    }
+
+    function specToJUnitXml(result, specStartTime) {
+        var xml = '<testcase classname="' + 'foo' +
+                '" name="' + escapeInvalidXmlChars(result.description) + '" time="' + elapsed(specStartTime, new Date()) + '">';
+        if(isSkipped(result)) {
+            xml += '<skipped />';
+        }
+        if(isFailed(result)) {
+            xml += failedToJUnitXml(result.failedExpectations)
+        }
+        xml += '</testcase>'
+        return xml;
+    }
+
+    function failedToJUnitXml(failedExpectations) {
+        var failure;
+        var failureXml = ""
+        for (var i = 0; i < failedExpectations.length; i++) {
+            failure = failedExpectations[i];
+            failureXml += '<failure type="' + failure.matcherName + '" message="' + trim(escapeInvalidXmlChars(failure.message)) + '">';
+            failureXml += escapeInvalidXmlChars(failure.stack || failure.message);
+            failureXml += "</failure>";
+        }
+
+        return failureXml;
     }
 
     function elapsed(startTime, endTime) {
