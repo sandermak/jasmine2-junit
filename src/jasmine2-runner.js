@@ -168,8 +168,8 @@ function processPage(status, page, resultsKey) {
         };
         var getResults = function() {
             return page.evaluate(function(){
-                return document.getElementsByClassName("description").length &&
-                       document.getElementsByClassName("description")[0].innerHTML.match(/(\d+) spec.* (\d+) failure.*/) ||
+                return document.getElementsByClassName("bar").length &&
+                       document.getElementsByClassName("bar")[0].innerHTML.match(/(\d+) spec.* (\d+) failure.*/) ||
                        ["Unable to determine success or failure."];
             });
         };
@@ -191,10 +191,12 @@ function processPage(status, page, resultsKey) {
                 var results = getResults();
                 var failures = Number(results[2]);
                 if (failures > 0) {
+                    console.error(results[0])
                     page.__exit_code = 1;
                     clearInterval(ival);
                 }
                 else {
+                    console.log(results[0]);
                     page.__exit_code = 0;
                     clearInterval(ival);
                 }
