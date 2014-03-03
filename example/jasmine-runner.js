@@ -35,6 +35,16 @@ function waitFor(testFx, onReady, timeOutMillis) {
         }, 100); //< repeat check every 100ms
 };
 
+// /**
+//  * Replaces the "evaluate" method with one we can easily do substitution with.
+//  *
+//  * @param {phantomjs.WebPage} page The WebPage object to overload
+//  */
+// function overloadPageEvaluate(page) {
+//     page._evaluate = page.evaluate;
+//     page.evaluate = function(fn, replacements) { return page._evaluate(replaceFunctionPlaceholders(fn, replacements)); };
+//     return page;
+// }
 
 if (system.args.length !== 2) {
     console.log('Usage: run-jasmine.js URL');
@@ -42,6 +52,21 @@ if (system.args.length !== 2) {
 }
 
 var page = require('webpage').create();
+var fs = require('fs')
+
+// Inject file-writing function into webpage
+page.onInitialized = function() {
+    
+    
+    console.log('initializing', fs)
+    page.evaluate(function(fs) {
+        var sep = fs.separator
+        window['_writeFile'] = function() {
+          console.log('writing file with sep', sep)
+          fs.write('foo', 'content', 'w');
+        }
+    }, fs);
+};
 
 // Route "console.log()" calls from within the Page context to the main Phantom context (i.e. current "this")
 page.onConsoleMessage = function(msg) {
