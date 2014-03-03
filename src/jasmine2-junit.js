@@ -171,7 +171,7 @@
             __phantom_writeFile(filename, text);
             return;
         } catch (f) {
-            console.log('error writing file', f)
+            console.log('Error writing file', f)
         }
         // Node.js
         try {
@@ -182,7 +182,7 @@
             fs.closeSync(fd);
             return;
         } catch (g) {
-            console.log('error writing file', g)
+            console.log('Error writing file', g)
         }
     }
 

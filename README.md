@@ -2,7 +2,7 @@ jasmine2-junit
 ==============
 
 
-By default, Jasmine only provides a ConsoleReporter and HtmlReporter. Neither are suitable for reporting in a CI build. This project adds an JUnitXmlReporter which outputs JUnit compliant testreports. The reporter currently  only works when running specs with [PhantomJS](http://phantomjs.org).
+By default, Jasmine 2.0 only provides a ConsoleReporter and HtmlReporter. Neither are suitable for reporting in a CI build. This project adds a JUnitXmlReporter which outputs JUnit compliant testreports. The reporter currently only works when running specs with [PhantomJS](http://phantomjs.org).
 
 Usage
 -----
@@ -28,7 +28,7 @@ Note that the ```boot.js``` file is a modified version of the file with same nam
 After you setup your spec html, you can use the ```jasmine2-runner.js``` script with PhantomJS to execute your spec:
 
 ```
-phantomjs jasmine2-runner.xml yourspec.html
+phantomjs jasmine2-runner.js yourspec.html
 ```
 
 After running this script, JUnit XML files with testresults are written to the current directory. They all start with a ```TEST-``` prefix and end with ```.xml```.
@@ -40,7 +40,7 @@ See the [example](https://github.com/sandermak/jasmine2-junit) for a working set
 npm install -g phantomjs
 ```
 
-in the ```example``` directory, run ```phantomjs ../src/jasmine2-runner.js specrunner.html```. JUnit XML output files are  written with a ```TEST-*``` prefix for each top-level ```describe()``` (suite) in the testsuites that are run by specrunner.html.
+in the ```example``` directory, run ```phantomjs ../src/jasmine2-runner.js specrunner.html```. JUnit XML output files are written with a ```TEST-*``` prefix for each top-level ```describe()``` (suite) in the testsuites that are run by specrunner.html.
 
 Acknowledgments
 ---------------
