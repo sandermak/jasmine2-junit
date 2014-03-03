@@ -18,8 +18,6 @@
         function JUnitXmlReporter(options) {
             var runStartTime;
             var specStartTime;
-            var totalNumberOfSpecs;
-            var totalNumberOfFailures = 0;
             var suiteLevel = -1;
             var suites = []
             var currentSuite;
@@ -34,18 +32,22 @@
                 console.log('jasmineDone')
                 console.log('runtime: ', elapsed(runStartTime, new Date()))
                 console.log('failures: ', totalNumberOfFailures)
-                
+
                 window.done = true
             };
 
             this.suiteStarted = function(result) {
                 console.log('suiteStarted', result)
-                
+
                 suiteLevel++;
                 if (suiteLevel == 0) {
+                    totalNumberOfSpecs = 0;
+                    totalNumberOfFailures = 0;
                     suites.push(result);
                     currentSuite = result;
-                    currentSuite.suiteStartTime = new Date();
+                    currentSuite.startTime = new Date();
+                    currentSuite.noOfSpecs = 0;
+                    currentSuite.noOfFails = 0;
                     currentSuite.specs = [];
                 }
             };
@@ -68,11 +70,12 @@
                 totalNumberOfSpecs++;
 
                 if (isFailed(result)) {
-                    totalNumberOfFailures++;
+                    currentSuite.noOfFails++;
                 }
                 result.startTime = specStartTime;
                 result.endTime = new Date();
                 currentSuite.specs.push(result);
+                currentSuite.noOfSpecs++;
                 console.log('specDone', result)
                 // console.log(specToJUnitXml(result, specStartTime))
                 console.log('spec time: ', elapsed(specStartTime, new Date()))
@@ -94,18 +97,18 @@
     }
 
     function suiteToJUnitXml(suite) {
-        var resultXml = '<?xml version="1.0" encoding="UTF-8"?>\n'; 
+        var resultXml = '<?xml version="1.0" encoding="UTF-8"?>\n';
         resultXml += '<testsuites>\n';
-        resultXml += '\t<testsuite> ...\n'
+        resultXml += '\t<testsuite tests="' + suite.noOfSpecs + '" errors="0" failures="' + suite.noOfFails + '" time="' + elapsed(suite.startTime, suite.endTime) + '" timestamp="' + ISODateString(suite.startTime) + '">\n'
         for (var i = 0; i < suite.specs.length; i++) {
-            resultXml += specToJUnitXml(suite.specs[i]);
+            resultXml += specToJUnitXml(suite.specs[i], suite.id);
         }
         resultXml += '\t</testsuite>\n</testsuites>\n\n'
         return resultXml;
     }
 
-    function specToJUnitXml(spec) {
-        var xml = '\t\t<testcase classname="' + 'foo' +
+    function specToJUnitXml(spec, suiteId) {
+        var xml = '\t\t<testcase classname="' + suiteId +
             '" name="' + escapeInvalidXmlChars(spec.description) + '" time="' + elapsed(spec.startTime, spec.endTime) + '">\n';
         if (isSkipped(spec)) {
             xml += '\t\t\t<skipped />\n';
@@ -130,6 +133,19 @@
         return failureXml;
     }
 
+    function ISODateString(d) {
+        function pad(n) {
+            return n < 10 ? '0' + n : n;
+        }
+
+        return d.getFullYear() + '-' +
+            pad(d.getMonth() + 1) + '-' +
+            pad(d.getDate()) + 'T' +
+            pad(d.getHours()) + ':' +
+            pad(d.getMinutes()) + ':' +
+            pad(d.getSeconds());
+    }
+
     function elapsed(startTime, endTime) {
         return (endTime - startTime) / 1000;
     }
@@ -147,20 +163,20 @@
     }
 
     function writeFile(path, filename, text) {
-                    function getQualifiedFilename(separator) {
-                if (path && path.substr(-1) !== separator && filename.substr(0) !== separator) {
-                    path += separator;
-                }
-                return path + filename;
+        function getQualifiedFilename(separator) {
+            if (path && path.substr(-1) !== separator && filename.substr(0) !== separator) {
+                path += separator;
             }
+            return path + filename;
+        }
 
         // PhantomJS
         try {
-             // turn filename into a qualified path
-             console.log('writeFile called')
-                filename = getQualifiedFilename(window.fs_path_separator);
-                __phantom_writeFile(filename, text);
-                return;
+            // turn filename into a qualified path
+            filename = getQualifiedFilename(window.fs_path_separator);
+            // function injected by jasmine-runner.js
+            __phantom_writeFile(filename, text);
+            return;
         } catch (f) {
             console.log('error writing file', f)
         }
