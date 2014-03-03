@@ -11,7 +11,7 @@ See the [example](https://github.com/sandermak/jasmine2-junit) for a working set
 npm install -g phantomjs
 ```
 
-in the ```example``` directory, run ```phantomjs jasmine-runner.js specrunner.html```. JUnit XML output files are  written with a ```TEST-*``` prefix for each top-level ```describe()``` (suite) in the testsuites that are run by specrunner.html.
+in the ```example``` directory, run ```phantomjs ../src/jasmine2-runner.js specrunner.html```. JUnit XML output files are  written with a ```TEST-*``` prefix for each top-level ```describe()``` (suite) in the testsuites that are run by specrunner.html.
 
 Acknowledgments
 ---------------

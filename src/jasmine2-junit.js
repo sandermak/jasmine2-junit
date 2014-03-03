@@ -23,22 +23,16 @@
             var currentSuite;
 
             this.jasmineStarted = function(started) {
-                console.log('jasmineStarted', started)
                 totalNumberOfSpecs = started.totalSpecsDefined;
                 runStartTime = new Date();
             };
 
             this.jasmineDone = function() {
-                console.log('jasmineDone')
-                console.log('runtime: ', elapsed(runStartTime, new Date()))
-                console.log('failures: ', totalNumberOfFailures)
-
+                console.log('Jasmine ran in ', elapsed(runStartTime, new Date()), ' seconds')
                 window.done = true
             };
 
             this.suiteStarted = function(result) {
-                console.log('suiteStarted', result)
-
                 suiteLevel++;
                 if (suiteLevel == 0) {
                     totalNumberOfSpecs = 0;
@@ -53,17 +47,15 @@
             };
 
             this.suiteDone = function(result) {
-                console.log('suiteDone', result)
                 if (suiteLevel == 0) {
                     currentSuite.endTime = new Date();
-                    writeFile('.', 'TEST-' + result.description, suiteToJUnitXml(currentSuite))
+                    writeFile('.', descToFilename(result.description), suiteToJUnitXml(currentSuite))
                 }
                 suiteLevel--;
             };
 
             this.specStarted = function(result) {
                 specStartTime = new Date();
-                console.log('specStarted', result)
             };
 
             this.specDone = function(result) {
@@ -76,9 +68,6 @@
                 result.endTime = new Date();
                 currentSuite.specs.push(result);
                 currentSuite.noOfSpecs++;
-                console.log('specDone', result)
-                // console.log(specToJUnitXml(result, specStartTime))
-                console.log('spec time: ', elapsed(specStartTime, new Date()))
             };
 
             return this;
@@ -131,6 +120,10 @@
         }
 
         return failureXml;
+    }
+
+    function descToFilename(desc) {
+        return 'TEST-' + desc + '.xml';
     }
 
     function ISODateString(d) {
@@ -188,7 +181,9 @@
             fs.writeSync(fd, text, 0);
             fs.closeSync(fd);
             return;
-        } catch (g) {}
+        } catch (g) {
+            console.log('error writing file', g)
+        }
     }
 
 })()
