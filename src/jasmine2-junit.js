@@ -1,4 +1,6 @@
 (function() {
+    "use strict";
+
     function getJasmineRequireObj() {
         if (typeof module !== "undefined" && module.exports) {
             return exports;
@@ -21,6 +23,8 @@
             var suiteLevel = -1;
             var suites = []
             var currentSuite;
+            var totalNumberOfSpecs;
+            var totalNumberOfFailures;
 
             this.jasmineStarted = function(started) {
                 totalNumberOfSpecs = started.totalSpecsDefined;
@@ -164,15 +168,19 @@
         }
 
         // PhantomJS
+
         try {
             // turn filename into a qualified path
             filename = getQualifiedFilename(window.fs_path_separator);
             // function injected by jasmine-runner.js
             __phantom_writeFile(filename, text);
             return;
-        } catch (f) {
-            console.log('Error writing file', f)
+        } catch (error) {
+            if(error.name !== 'ReferenceError') {
+                console.log('Error writing file', error)
+            }
         }
+
         // Node.js
         try {
             var fs = require("fs");
@@ -181,8 +189,10 @@
             fs.writeSync(fd, text, 0);
             fs.closeSync(fd);
             return;
-        } catch (g) {
-            console.log('Error writing file', g)
+        } catch (error) {
+            if(error.name !== 'ReferenceError') {
+                console.log('Error writing file', error)
+            }
         }
     }
 
