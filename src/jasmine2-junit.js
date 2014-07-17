@@ -168,29 +168,28 @@
         }
 
         // PhantomJS
-
-        try {
-            // turn filename into a qualified path
-            filename = getQualifiedFilename(window.fs_path_separator);
-            // function injected by jasmine-runner.js
-            __phantom_writeFile(filename, text);
-            return;
-        } catch (error) {
-            if(error.name !== 'ReferenceError') {
+        if(typeof(__phantom_writeFile) !== 'undefined') {
+            try {
+                // turn filename into a qualified path
+                filename = getQualifiedFilename(window.fs_path_separator);
+                // function injected by jasmine-runner.js
+                __phantom_writeFile(filename, text);
+                return;
+            } catch (error) {
                 console.log('Error writing file', error)
             }
         }
 
         // Node.js
-        try {
-            var fs = require("fs");
-            var nodejs_path = require("path");
-            var fd = fs.openSync(nodejs_path.join(path, filename), "w");
-            fs.writeSync(fd, text, 0);
-            fs.closeSync(fd);
-            return;
-        } catch (error) {
-            if(error.name !== 'ReferenceError') {
+        if(typeof(global) !== 'undefined') {
+            try {
+                var fs = require("fs");
+                var nodejs_path = require("path");
+                var fd = fs.openSync(nodejs_path.join(path, filename), "w");
+                fs.writeSync(fd, text, 0);
+                fs.closeSync(fd);
+                return;
+            } catch (error) {
                 console.log('Error writing file', error)
             }
         }
