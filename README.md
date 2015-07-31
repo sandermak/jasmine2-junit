@@ -2,7 +2,7 @@ jasmine2-junit
 ==============
 
 
-By default, Jasmine 2.0 only provides a ConsoleReporter and HtmlReporter. Neither are suitable for reporting in a CI build. This project adds a JUnitXmlReporter which outputs JUnit compliant testreports. The reporter currently only works when running specs with [PhantomJS](http://phantomjs.org).
+By default, Jasmine 2.0 only provides a ConsoleReporter and HtmlReporter. Neither are suitable for reporting in a CI build. This project adds a JUnitXmlReporter which outputs JUnit compliant testreports. The reporter currently only works when running specs with [PhantomJS](http://phantomjs.org) 1.9.x.
 
 Usage
 -----
@@ -35,13 +35,17 @@ After running this script, JUnit XML files with testresults are written to the c
 
 Example
 -------
-See the [example](https://github.com/sandermak/jasmine2-junit) for a working setup of jasmine2-junit with Jasmine 2.0. Install the PhantomJS node package:
+See the [example](https://github.com/sandermak/jasmine2-junit/example) for a working setup of jasmine2-junit with Jasmine 2.0. Install the PhantomJS node package:
 ```
 npm install -g phantomjs
 ```
+(note: phantomjs2 is not supported!)
 
 in the ```example``` directory, run ```phantomjs ../src/jasmine2-runner.js specrunner.html```. JUnit XML output files are written with a ```TEST-*``` prefix for each top-level ```describe()``` (suite) in the testsuites that are run by specrunner.html.
 
 Acknowledgments
 ---------------
-The code and setup for this project are heavily based on the JUnitXmlReporter at https://github.com/larrymyers/jasmine-reporters which only works for Jasmine 1.x.
+The code and setup for this project are heavily based on the JUnitXmlReporter at https://github.com/larrymyers/jasmine-reporters which only worked for Jasmine 1.x at the time.
+Nowadays, this project has picked up steam again and supports Jasmine 2.x as well.
+I recommend looking there first, since it has a larger userbase and is actively maintained by multiple committers.
+
